@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>后端接口服务化的意义 | WebFuture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="每个公司都有一个核心业务，当我们在开发核心业务的时候，我们就跟着业务走，有新的功能新增一个接口，前端写完页面，前后端联调，然后搞定。在这个阶段，这么做无可厚非，因为核心业务基本是不会重叠的。但是公司发展壮大之后，产品线就会进行扩展，不管对内还是对外。产品线扩展之后，数据类型并不是同步增长的，数据更多是以组合得方式进行扩展。这个时候我们再跟着需求来写接口就会发现，我们做了很多重复工作。  加入：我">
+<meta name="keywords" content="rest,api,service">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后端接口服务化的意义">
+<meta property="og:url" content="http://blog.jokcy.me/2016/01/25/design-rest-api/index.html">
+<meta property="og:site_name" content="WebFuture">
+<meta property="og:description" content="每个公司都有一个核心业务，当我们在开发核心业务的时候，我们就跟着业务走，有新的功能新增一个接口，前端写完页面，前后端联调，然后搞定。在这个阶段，这么做无可厚非，因为核心业务基本是不会重叠的。但是公司发展壮大之后，产品线就会进行扩展，不管对内还是对外。产品线扩展之后，数据类型并不是同步增长的，数据更多是以组合得方式进行扩展。这个时候我们再跟着需求来写接口就会发现，我们做了很多重复工作。  加入：我">
+<meta property="og:updated_time" content="2018-01-03T10:19:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后端接口服务化的意义">
+<meta name="twitter:description" content="每个公司都有一个核心业务，当我们在开发核心业务的时候，我们就跟着业务走，有新的功能新增一个接口，前端写完页面，前后端联调，然后搞定。在这个阶段，这么做无可厚非，因为核心业务基本是不会重叠的。但是公司发展壮大之后，产品线就会进行扩展，不管对内还是对外。产品线扩展之后，数据类型并不是同步增长的，数据更多是以组合得方式进行扩展。这个时候我们再跟着需求来写接口就会发现，我们做了很多重复工作。  加入：我">
+  
+    <link rel="alternative" href="/atom.xml" title="WebFuture" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.proxy.ustclug.org/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <!-- <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css"> -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-49483742-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">WebFuture</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Make Your Future of Web</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">文章</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.jokcy.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-design-rest-api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/25/design-rest-api/" class="article-date">
+  <time datetime="2016-01-25T09:05:58.000Z" itemprop="datePublished">2016-01-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      后端接口服务化的意义
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>每个公司都有一个核心业务，当我们在开发核心业务的时候，我们就跟着业务走，有新的功能新增一个接口，<br>前端写完页面，前后端联调，然后搞定。在这个阶段，这么做无可厚非，因为核心业务基本是不会重叠的。<br>但是公司发展壮大之后，产品线就会进行扩展，不管对内还是对外。产品线扩展之后，数据类型并不是同步增长的，<br>数据更多是以组合得方式进行扩展。这个时候我们再跟着需求来写接口就会发现，我们做了很多重复工作。</p>
+</blockquote>
+<p><strong>加入：</strong>我们有一个用户体系，我们有两个内部系统和一个app具有用户操作权限（指对所有用户都有可操作权限），<br>所以我们在这三个系统上都需要调用用户列表的接口。而app和web端由于交互形式不同，显示的数据也不同，同时app<br>端还因为希望省流量所以希望返回的字段尽量少。那么我们发现以传统的<code>RPC</code>形式开发的接口明显是不能满足需求的，<br>我们需要对每个系统都提供一个获取用户列表的接口，这就是资源浪费以及重复劳动。</p>
+<p>这就是后端接口服务化的意义，服务化代表着这接口是面向大众的，没有业务耦合性，所有地方都可以调用。</p>
+<h2 id="restful-api-design"><a href="#restful-api-design" class="headerlink" title="restful api design"></a>restful api design</h2><p>rest是最经典的接口服务化设计方案，其基于http，充分利用http协议的特性，无状态的特点非常适合业务的解耦。<br>我们来看一个简单的例子：</p>
+<p>我们有一个user数据库，我们需要对用户进行增删查改的操作，于是我们有如下的设计：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET     <span class="string">http:</span><span class="comment">//host:port/user/:id</span></span><br><span class="line">POST    <span class="string">http:</span><span class="comment">//host:port/user/:id</span></span><br><span class="line">PUT     <span class="string">http:</span><span class="comment">//host:port/user</span></span><br><span class="line">DELETE  <span class="string">http:</span><span class="comment">//host:post/user/:id</span></span><br><span class="line"></span><br><span class="line">PATCH   <span class="string">http:</span><span class="comment">//host:post/user/:id     // 局部修改</span></span><br></pre></td></tr></table></figure></p>
+<p>非常简洁明了得表示了<em>获取用户</em>，<em>修改用户</em>，<em>新增用户</em>，<em>删除用户</em>的操作</p>
+<p>当然光这些操作肯定是不能涵盖所有的业务场景的，于是我们就来列举一下一些常见的业务场景。</p>
+<h4 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h4><p>列表请求是最常见的请求之一，所以基本上我们也是最方便来进行抽象的接口：<br><figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span>    http://host:port/query/user?filter=<span class="meta">&#123;...&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>基本上就是GET请求不带id，带上删选条件</p>
+<h4 id="批量操作"><a href="#批量操作" class="headerlink" title="批量操作"></a>批量操作</h4><p>常见的批量操作例如：批量删除，批量新增，批量修改等<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST|PUT|<span class="keyword">DELETE</span>|<span class="keyword">PATCH</span>    <span class="keyword">http</span>://host:port/</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">data</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      // ... single <span class="keyword">action</span> <span class="keyword">data</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="其他类型接口"><a href="#其他类型接口" class="headerlink" title="其他类型接口"></a>其他类型接口</h4><p>auth</p>
+<h2 id="其他好处"><a href="#其他好处" class="headerlink" title="其他好处"></a>其他好处</h2><p>restful api的设计对于代码复用也是有促进作用的，因为所有变化的内容都是作为参数出现的，那么很容易就能把不变的东西封装起来，<br>比如<code>CRUD</code>请求做到极致我么可以把资源名（如/user）也看做参数（/:className），可以我们接收到一个<code>CRUD</code>请求的时候，<br>我们完全可以动态得去获取数据。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.jokcy.me/2016/01/25/design-rest-api/" data-id="cjbyxbrdn0001733vs3snz6gd" class="article-share-link">Share</a>
+      
+        <a href="http://blog.jokcy.me/2016/01/25/design-rest-api/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rest/">rest</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service/">service</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/15/how-to-create-a-webpack-loader/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          如何创建自己的webpack loader
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/11/04/使用Flux的几个问题/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用Flux的几个问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/decorators/">decorators</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2015/">es2015</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2016/">es2016</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flux/">flux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/loader/">loader</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redux/">redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rest/">rest</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue-loader/">vue-loader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webpack/">webpack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/decorators/" style="font-size: 10px;">decorators</a> <a href="/tags/es2015/" style="font-size: 10px;">es2015</a> <a href="/tags/es2016/" style="font-size: 10px;">es2016</a> <a href="/tags/flux/" style="font-size: 10px;">flux</a> <a href="/tags/loader/" style="font-size: 20px;">loader</a> <a href="/tags/react/" style="font-size: 20px;">react</a> <a href="/tags/redux/" style="font-size: 10px;">redux</a> <a href="/tags/rest/" style="font-size: 10px;">rest</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/vue-loader/" style="font-size: 10px;">vue-loader</a> <a href="/tags/webpack/" style="font-size: 20px;">webpack</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">文章</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">2016-04</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">2016-01</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">2015-11</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">2015-10</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">2015-09</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">更多</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/15/talk-about-vue-loader/">吐槽一下vue loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/15/how-to-create-a-webpack-loader/">如何创建自己的webpack loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/25/design-rest-api/">后端接口服务化的意义</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/04/使用Flux的几个问题/">使用Flux的几个问题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/10/29/redux-deeply/">redux深入学习之中间件机制</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Jokcy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">文章</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'jokcyblog';
+  
+  var disqus_url = 'http://blog.jokcy.me/2016/01/25/design-rest-api/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

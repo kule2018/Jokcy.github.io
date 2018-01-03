@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>redux深入学习之中间件机制 | WebFuture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上一篇文章讲解了redux如何使用，本篇文章将进一步深入，从redux的源码入手，深入学习redux的中间件机制。在这里我们会以一个redux-thunk中间件为例，逐步分解redux的中间机制如何操作，如何执行。闲话不多说，上代码。  如何加载中间件12345678910import &amp;#123; createStore, applyMiddleware &amp;#125; from &apos;redux&apos;">
+<meta name="keywords" content="react,flux,redux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redux深入学习之中间件机制">
+<meta property="og:url" content="http://blog.jokcy.me/2015/10/29/redux-deeply/index.html">
+<meta property="og:site_name" content="WebFuture">
+<meta property="og:description" content="上一篇文章讲解了redux如何使用，本篇文章将进一步深入，从redux的源码入手，深入学习redux的中间件机制。在这里我们会以一个redux-thunk中间件为例，逐步分解redux的中间机制如何操作，如何执行。闲话不多说，上代码。  如何加载中间件12345678910import &amp;#123; createStore, applyMiddleware &amp;#125; from &apos;redux&apos;">
+<meta property="og:updated_time" content="2018-01-03T10:19:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="redux深入学习之中间件机制">
+<meta name="twitter:description" content="上一篇文章讲解了redux如何使用，本篇文章将进一步深入，从redux的源码入手，深入学习redux的中间件机制。在这里我们会以一个redux-thunk中间件为例，逐步分解redux的中间机制如何操作，如何执行。闲话不多说，上代码。  如何加载中间件12345678910import &amp;#123; createStore, applyMiddleware &amp;#125; from &apos;redux&apos;">
+  
+    <link rel="alternative" href="/atom.xml" title="WebFuture" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.proxy.ustclug.org/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <!-- <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css"> -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-49483742-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">WebFuture</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Make Your Future of Web</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">文章</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.jokcy.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-redux-deeply" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/29/redux-deeply/" class="article-date">
+  <time datetime="2015-10-29T03:41:20.000Z" itemprop="datePublished">2015-10-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      redux深入学习之中间件机制
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>上一篇文章讲解了redux如何使用，本篇文章将进一步深入，从redux的源码入手，深入学习redux的中间件机制。<br>在这里我们会以一个<code>redux-thunk</code>中间件为例，逐步分解redux的中间机制如何操作，如何执行。<br>闲话不多说，上代码。</p>
+</blockquote>
+<h3 id="如何加载中间件"><a href="#如何加载中间件" class="headerlink" title="如何加载中间件"></a>如何加载中间件</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createStore, applyMiddleware &#125; <span class="keyword">from</span> <span class="string">'redux'</span>;</span><br><span class="line"><span class="keyword">import</span> thunk <span class="keyword">from</span> <span class="string">'redux-thunk'</span>;</span><br><span class="line"><span class="keyword">import</span> rootReducer <span class="keyword">from</span> <span class="string">'./reducers/index'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a store that has redux-thunk middleware enabled</span></span><br><span class="line"><span class="keyword">const</span> createStoreWithMiddleware = applyMiddleware(</span><br><span class="line">  thunk</span><br><span class="line">)(createStore);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> store = createStoreWithMiddleware(rootReducer);</span><br></pre></td></tr></table></figure>
+<p>这里需要用到<code>redux</code>中提供的一个工具方法，叫做<code>applyMiddleware</code>,向该方法传入你想要使用的中间件，完了之后再传入<code>createStore</code>方法，<br>最终形成新的创建store的方法。</p>
+<p>这显然是一个<strong>装饰器模式</strong>，通过不同的中间件对<code>createStore</code>方法进行修饰，最后形成新的<code>createStore</code>方法，那么创建的store就具有这些中间件的特性，<br>非常出色的设计，惊喜不仅在这，看了之后的代码你就更不得不佩服作者的代码设计能力。</p>
+<p>瞬间觉得别人都是码神，而我就是码农有木有/(ㄒoㄒ)/~~</p>
+<h3 id="中间件加载机制的实现"><a href="#中间件加载机制的实现" class="headerlink" title="中间件加载机制的实现"></a>中间件加载机制的实现</h3><p>先来看<code>applyMiddleware</code>方法的实现<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> compose <span class="keyword">from</span> <span class="string">'./compose'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates a store enhancer that applies middleware to the dispatch method</span></span><br><span class="line"><span class="comment"> * of the Redux store. This is handy for a variety of tasks, such as expressing</span></span><br><span class="line"><span class="comment"> * asynchronous actions in a concise manner, or logging every action payload.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * See `redux-thunk` package as an example of the Redux middleware.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Because middleware is potentially asynchronous, this should be the first</span></span><br><span class="line"><span class="comment"> * store enhancer in the composition chain.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note that each middleware will be given the `dispatch` and `getState` functions</span></span><br><span class="line"><span class="comment"> * as named arguments.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param &#123;...Function&#125; middlewares The middleware chain to be applied.</span></span><br><span class="line"><span class="comment"> * @returns &#123;Function&#125; A store enhancer applying the middleware.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">applyMiddleware</span>(<span class="params">...middlewares</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">next</span>) =&gt;</span> (reducer, initialState) =&gt; &#123;</span><br><span class="line">    <span class="keyword">var</span> store = next(reducer, initialState);</span><br><span class="line">    <span class="keyword">var</span> dispatch = store.dispatch;</span><br><span class="line">    <span class="keyword">var</span> chain = [];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> middlewareAPI = &#123;</span><br><span class="line">      getState: store.getState,</span><br><span class="line">      dispatch: <span class="function">(<span class="params">action</span>) =&gt;</span> dispatch(action)</span><br><span class="line">    &#125;;</span><br><span class="line">    chain = middlewares.map(<span class="function"><span class="params">middleware</span> =&gt;</span> middleware(middlewareAPI));</span><br><span class="line">    dispatch = compose(...chain)(store.dispatch);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      ...store,</span><br><span class="line">      dispatch</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这就是redux里面这个方法的源码，其中还一半是注释有木有。。。本来以为肯定有百来行代码的<br>当然这里不得不说es6的特性提供了非常多的帮助，所以为了省力吧es6玩透还是灰常有必要的（更别说为了装X了(<em>^__^</em>) ）</p>
+<p>从这里开始代码就有点绕了，我们逐行分析<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="function">(<span class="params">next</span>) =&gt;</span> (reducer, initialState) =&gt; &#123;...&#125;</span><br></pre></td></tr></table></figure></p>
+<p>整个<code>applyMiddleware</code>方法就是返回了一个方法，根据<code>applyMiddleware</code>方法的使用，我们可以知道<code>next</code>就是<code>createStore</code>方法，<br>因为最终我们要返回的是一个装饰过的<code>createStore</code>方法，那么接收的参数肯定是不会变，所以最终我们调用<code>createStoreWithMiddleware</code>方法其实就是调用<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">reducer, initialState</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">var</span> store = next(reducer, initialState); <span class="comment">// next即为最初的createStore方法</span></span><br><span class="line">	<span class="comment">// ...以下省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> store = next(reducer, initialState);</span><br><span class="line"><span class="keyword">var</span> dispatch = store.dispatch;</span><br><span class="line"><span class="keyword">var</span> chain = [];</span><br></pre></td></tr></table></figure>
+<p>这里没什么好讲的，首先创建了一个store，这个store就是最原始的通过<code>createStore</code>创建的store，后两行只是变量赋值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> middlewareAPI = &#123;</span><br><span class="line">  getState: store.getState,</span><br><span class="line">  dispatch: <span class="function">(<span class="params">action</span>) =&gt;</span> dispatch(action)</span><br><span class="line">&#125;;</span><br><span class="line">chain = middlewares.map(<span class="function"><span class="params">middleware</span> =&gt;</span> middleware(middlewareAPI));</span><br><span class="line">dispatch = compose(...chain)(store.dispatch);</span><br></pre></td></tr></table></figure>
+<p>这里是关键，必须详细进行讲解。</p>
+<p>首先，这边声明了一个<code>middlewareAPI</code>对象，这个对象包含两个方法：</p>
+<ol>
+<li>getState：store中的getState方法的引用</li>
+<li>dispatch：对本身的dispatch方法进行一次封装</li>
+</ol>
+<p>然后<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chain = middlewares.map(<span class="function"><span class="params">middleware</span> =&gt;</span> middleware(middlewareAPI));</span><br></pre></td></tr></table></figure></p>
+<p>我们来仔细看看这行代码，首先我们对所有的中间件进行一个map，map结果就是调用中间件方法，将<code>middlewareAPI</code>作为参数传入,<br>这里我们拿<code>redux-thunk</code>中间件举例，来看看一个中间件是长什么样子的，传入的参数又是用来干嘛的。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">thunkMiddleware</span>(<span class="params">&#123; dispatch, getState &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">next</span> =&gt;</span> action =&gt;</span><br><span class="line">    <span class="keyword">typeof</span> action === <span class="string">'function'</span> ?</span><br><span class="line">      action(dispatch, getState) :</span><br><span class="line">      next(action);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>redux-thunk</code>的功能是让action支持异步，让我们可以在action中跟服务器进行交互等操作，而他的实现。。。(⊙﹏⊙)b是的，又是这么几行代码。</p>
+<p>我们回顾之前的代码，在map所有中间件的时候我们调用了<code>thunkMiddleware</code>方法，传入两个方法<code>dispatch</code>和<code>getState</code>，然后返回了一个方法，<br>我们大致抽象一下，应该如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">next</span>) </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">action</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">typeof</span> action === <span class="string">'function'</span> ?</span><br><span class="line">      action(dispatch, getState) :</span><br><span class="line">      next(action)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>于是我们接下去分析<code>applyMiddleware</code>里面的代码，<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chain = middlewares.map(<span class="function"><span class="params">middleware</span> =&gt;</span> middleware(middlewareAPI));</span><br></pre></td></tr></table></figure></p>
+<p>现在我们知道chain是一个数组，每一项是调用每个中间件之后的返回函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatch = compose(...chain)(store.dispatch);</span><br></pre></td></tr></table></figure>
+<p>compose是redux里面的一个帮助函数，代码如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">compose</span>(<span class="params">...funcs</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">arg</span> =&gt;</span> funcs.reduceRight(<span class="function">(<span class="params">composed, f</span>) =&gt;</span> f(composed), arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><del>~~(&gt;_&lt;)</del>~~我已经不想再吐槽什么了，</p>
+<p>我们看到这边先调用了<code>compose</code>函数，传入了结构后的<code>chain</code>数组，然后<code>compose</code>函数返回的也是一个函数：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> funcs.reduceRight(<span class="function">(<span class="params">composed, f</span>) =&gt;</span> f(composed), arg);</span><br><span class="line">  <span class="comment">// funcs就是中间件数组</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后我们把<code>store.dispatch</code>函数作为<code>arg</code>传入这个结果，这里reduceRight可以参考<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/ReduceRight" target="_blank" rel="noopener">这里</a><br>。那么这边得到的结果是什么呢？<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 假设中间件数组是[A, B, C]</span></span><br><span class="line"><span class="comment">// 那么结果就是A(B(C(store.dispatch)))</span></span><br></pre></td></tr></table></figure></p>
+<p>再次结合<code>redux-thunk</code>来看，我们假设只有一个中间件，那么最终的<code>dispatch</code>方法就是<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">typeof</span> action === <span class="string">'function'</span> ?</span><br><span class="line">    action(dispatch, getState) :</span><br><span class="line">    next(action)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这里的next方法，就是真正的store.dispatch方法</span></span><br><span class="line"><span class="comment">// 这里的dispatch是(action) =&gt; store.dispatch(action)</span></span><br></pre></td></tr></table></figure></p>
+<p>我们再结合<code>redux-thunk</code>的使用方法来分析一下，<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">incrementAsync</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">dispatch</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// Yay! Can invoke sync or async actions with `dispatch`</span></span><br><span class="line">      dispatch(increment());</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这是使用<code>redux-thunk</code>时可以定义的异步action，我们触发action的时候调用的是<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dispatch(incrementAsync())</span><br></pre></td></tr></table></figure></p>
+<p><code>incrementAsync</code>返回的是<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">dispatch</span>) </span>&#123;</span><br><span class="line">  setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// Yay! Can invoke sync or async actions with `dispatch`</span></span><br><span class="line">    dispatch(increment());</span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个时候我们回想经过中间件加工的<code>dispatch</code>方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">typeof</span> action === <span class="string">'function'</span> ?</span><br><span class="line">    action(dispatch, getState) :</span><br><span class="line">    next(action)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这里的next方法，就是真正的store.dispatch方法</span></span><br><span class="line"><span class="comment">// 这里的dispatch是(action) =&gt; store.dispatch(action)</span></span><br></pre></td></tr></table></figure></p>
+<p>action是一个函数，所以<code>action === &#39;function&#39; ?</code>成立，那么就执行action， 并把中间件接收到的dispatch方法（<code>(action) =&gt; store.dispatch(action)</code>）方法作为参数传入，<br>在异步方法执行完之后再次触发真正的action。如果action不是异步的，那么久直接返回一个对象，这个时候<code>action === &#39;function&#39; ?</code>不成立，就直接调用<code>next</code>，<br>也就是原始的<code>store.dispatch</code>方法。</p>
+<p>我们再接着想，如果我们有许多个中间件，那么没一个中间件的<code>next</code>就是下一个中间件直到最后一个中间件调用<code>store.dispatch</code>为止。</p>
+<p>以上的代码非常绕，建议去专研一下源码。这么精简的代码包含了非常多的函数式编程的思想，也用到了装饰器模式的原理，不得不说：</p>
+<blockquote>
+<p><strong>太烧脑啦/(ㄒoㄒ)/~~</strong></p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.jokcy.me/2015/10/29/redux-deeply/" data-id="cjbyxbrdu0005733vase41wxp" class="article-share-link">Share</a>
+      
+        <a href="http://blog.jokcy.me/2015/10/29/redux-deeply/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flux/">flux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/">react</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redux/">redux</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/11/04/使用Flux的几个问题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用Flux的几个问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/28/learn-to-use-redux/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">学习使用redux</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/decorators/">decorators</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2015/">es2015</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2016/">es2016</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flux/">flux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/loader/">loader</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redux/">redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rest/">rest</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue-loader/">vue-loader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webpack/">webpack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/decorators/" style="font-size: 10px;">decorators</a> <a href="/tags/es2015/" style="font-size: 10px;">es2015</a> <a href="/tags/es2016/" style="font-size: 10px;">es2016</a> <a href="/tags/flux/" style="font-size: 10px;">flux</a> <a href="/tags/loader/" style="font-size: 20px;">loader</a> <a href="/tags/react/" style="font-size: 20px;">react</a> <a href="/tags/redux/" style="font-size: 10px;">redux</a> <a href="/tags/rest/" style="font-size: 10px;">rest</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/vue-loader/" style="font-size: 10px;">vue-loader</a> <a href="/tags/webpack/" style="font-size: 20px;">webpack</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">文章</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">2016-04</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">2016-01</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">2015-11</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">2015-10</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">2015-09</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">更多</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/15/talk-about-vue-loader/">吐槽一下vue loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/15/how-to-create-a-webpack-loader/">如何创建自己的webpack loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/25/design-rest-api/">后端接口服务化的意义</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/04/使用Flux的几个问题/">使用Flux的几个问题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/10/29/redux-deeply/">redux深入学习之中间件机制</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Jokcy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">文章</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'jokcyblog';
+  
+  var disqus_url = 'http://blog.jokcy.me/2015/10/29/redux-deeply/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用Flux的几个问题 | WebFuture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近使用react进行项目开发的时候遇到了几个比较纠结的问题，记录下来大家可以看看，自己也可以慢慢研究，或者有哪位大神有什么好的解决方案，可以留个言或者发个邮件给我  异步操作结果处理最简单的例子就是我们进行登录，我们需要输入用户名密码，并发送一个请求到服务器，等待服务器的返回结果，如果正确，我们跳转到登录成功页面，失败则跳转到登录失败页面。 换到flux里面，可能就是以下几个步骤：  在登录组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Flux的几个问题">
+<meta property="og:url" content="http://blog.jokcy.me/2015/11/04/使用Flux的几个问题/index.html">
+<meta property="og:site_name" content="WebFuture">
+<meta property="og:description" content="最近使用react进行项目开发的时候遇到了几个比较纠结的问题，记录下来大家可以看看，自己也可以慢慢研究，或者有哪位大神有什么好的解决方案，可以留个言或者发个邮件给我  异步操作结果处理最简单的例子就是我们进行登录，我们需要输入用户名密码，并发送一个请求到服务器，等待服务器的返回结果，如果正确，我们跳转到登录成功页面，失败则跳转到登录失败页面。 换到flux里面，可能就是以下几个步骤：  在登录组">
+<meta property="og:updated_time" content="2018-01-03T10:19:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Flux的几个问题">
+<meta name="twitter:description" content="最近使用react进行项目开发的时候遇到了几个比较纠结的问题，记录下来大家可以看看，自己也可以慢慢研究，或者有哪位大神有什么好的解决方案，可以留个言或者发个邮件给我  异步操作结果处理最简单的例子就是我们进行登录，我们需要输入用户名密码，并发送一个请求到服务器，等待服务器的返回结果，如果正确，我们跳转到登录成功页面，失败则跳转到登录失败页面。 换到flux里面，可能就是以下几个步骤：  在登录组">
+  
+    <link rel="alternative" href="/atom.xml" title="WebFuture" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.proxy.ustclug.org/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <!-- <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css"> -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-49483742-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">WebFuture</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Make Your Future of Web</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">文章</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.jokcy.me"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-使用Flux的几个问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/04/使用Flux的几个问题/" class="article-date">
+  <time datetime="2015-11-04T06:44:08.000Z" itemprop="datePublished">2015-11-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用Flux的几个问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>最近使用react进行项目开发的时候遇到了几个比较纠结的问题，记录下来大家可以看看，<br>自己也可以慢慢研究，或者有哪位大神有什么好的解决方案，可以留个言或者<a href="mailto:jokcylou@hotmail.com" target="_blank" rel="noopener">发个邮件给我</a></p>
+</blockquote>
+<h2 id="异步操作结果处理"><a href="#异步操作结果处理" class="headerlink" title="异步操作结果处理"></a>异步操作结果处理</h2><p>最简单的例子就是我们进行登录，我们需要输入用户名密码，并发送一个请求到服务器，等待服务器的返回结果，如果正确，我们跳转到登录成功页面，失败则跳转到登录失败页面。</p>
+<p>换到flux里面，可能就是以下几个步骤：</p>
+<ol>
+<li>在登录组件内输入用户名密码</li>
+<li>点击登录按钮后<code>dispatch</code>一个<code>action</code>声明一下我要进行登录了</li>
+<li><code>action</code>里面跟服务器进行沟通，获取是否登录成功的结果</li>
+<li>如果成功，触发一个登录成功的<code>action</code>，如果失败，触发一下登录失败的<code>action</code></li>
+<li>然后store根据不同的action结果，渲染不同的结果</li>
+</ol>
+<p>这看起来貌似非常正常的一个流程，从组建操作，到动作触发，再到数据确认，最后重新渲染。</p>
+<p><strong>但是</strong>，如果我们追究到细节，就会提出一个问题：</p>
+<p><strong>登录组件如何知道登录是否成功？</strong></p>
+<p>我们会有这个问题是因为这是一个单页面应用，所以在进行异步请求的时候我们肯定就要维护不同的状态，试想我们不适用react进行开发，<br>而是使用<code>jQuery</code>我们会怎么做。我们就会绑定一个<code>submit</code>事件到form上，form在提交的时候我们获取事件，读取form表单的数据，通过ajax发送请求，<br>然后我们再发送ajax之前我们先把登录按钮<code>disable</code>掉，并且还可以改文字为<code>正在登录...</code>，然后ajax请求结束之后，<br>根据不同的结果我们可以修改取消登录按钮的<code>disable</code>状态，然后把文字改回来，或者登录成功直接跳转到新的view上面。</p>
+<p>而在flux下，我们在点击按钮之后操作就交给<code>action</code>，在当前组件的上下文当中我们没办法知道<code>action</code>进行到哪一步了，唯一知道的办法是通过<code>action</code>改变<code>store</code>里面的状态。<br>我们可以想象在我们的<code>user store</code>里面加上几个状态<code>{syncing: true, success: true, error: false}</code></p>
+<p>这似乎解决我们的问题，但仔细一想，似乎又有些不对(ˇˍˇ) 。如果我们把<code>success, error</code>这样的状态放到一个<code>store</code>里面，如果有其他的组件也要使用这个<code>store</code>，那么这个状态也就一起过去了。<br>但是我们仔细想一想，这个状态应该是这次<code>action</code>的状态，这并不应该一个store的状态，我们放在<code>store</code>里面的数据应该是非常慎重的，是在整个app下面都通用的状态，<br>对于一个<code>store</code>我们可以有非常多的<code>action</code>，如果每个<code>action</code>都需要不同的状态，那么当app非常大之后，我们就没犯法很好得维护这些状态。</p>
+<p>当然如果我们要解决也是很好解决的，我们可以给<code>action</code>加上两个<code>callback</code>。</p>
+<p>但是这是违背flux的单向数据量的原则。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>我提出上面的例子，似乎很大程度上是因为我还没有从老式的<code>MVC</code>模式中走出来。借此机会我再来好好理解一下flux</p>
+<p>fb当初提出flux的时候有这么一个设想，他们联系以前老式的网站开发的模式，前端提交一个请求到后端，后端根据请求处理数据，然后根据结果渲染好对应的HTML，返回给浏览器，然后给浏览器展示。<br>这整个过程实际上跟flux<code>component --&gt; action --&gt; store -(props)-&gt; component</code>的流程很相似。那么在这里<code>action</code>其实就是一个http请求处理程序，<code>store</code>是一个数据集（数据库）存储数据</p>
+<p>那么<code>action</code>应该做的事情就是根据请求告诉<code>store</code>应该如何进行数据更新，在老式的服务器渲染的开发模式中浏览器在发送请求之后就直接等待服务器发送的HTML了，<br>所以在这里组件发送<code>action</code>之后也是不应该有状态回馈的（除了syncing状态，类比浏览器请求中的情况）。</p>
+<p>那么最终如何决定请求结束后页面该以什么形态展示呢？</p>
+<p><em>是URL</em></p>
+<p>我们可以看到传统的网站url是经常在变动的，登录，表单提交，查看列表，每个请求其实就对应一个URL，换句话说，<strong>URL表明了我们以什么样的方式展现我们的网站</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.jokcy.me/2015/11/04/使用Flux的几个问题/" data-id="cjbyxbre0000b733vzog42hoa" class="article-share-link">Share</a>
+      
+        <a href="http://blog.jokcy.me/2015/11/04/使用Flux的几个问题/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/25/design-rest-api/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          后端接口服务化的意义
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/29/redux-deeply/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">redux深入学习之中间件机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/decorators/">decorators</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2015/">es2015</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es2016/">es2016</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flux/">flux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/loader/">loader</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redux/">redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rest/">rest</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue-loader/">vue-loader</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webpack/">webpack</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/教程/">教程</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/decorators/" style="font-size: 10px;">decorators</a> <a href="/tags/es2015/" style="font-size: 10px;">es2015</a> <a href="/tags/es2016/" style="font-size: 10px;">es2016</a> <a href="/tags/flux/" style="font-size: 10px;">flux</a> <a href="/tags/loader/" style="font-size: 20px;">loader</a> <a href="/tags/react/" style="font-size: 20px;">react</a> <a href="/tags/redux/" style="font-size: 10px;">redux</a> <a href="/tags/rest/" style="font-size: 10px;">rest</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/vue-loader/" style="font-size: 10px;">vue-loader</a> <a href="/tags/webpack/" style="font-size: 20px;">webpack</a> <a href="/tags/教程/" style="font-size: 10px;">教程</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">文章</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">2016-04</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">2016-01</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">2015-11</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">2015-10</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">2015-09</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">更多</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/15/talk-about-vue-loader/">吐槽一下vue loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/15/how-to-create-a-webpack-loader/">如何创建自己的webpack loader</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/25/design-rest-api/">后端接口服务化的意义</a>
+          </li>
+        
+          <li>
+            <a href="/2015/11/04/使用Flux的几个问题/">使用Flux的几个问题</a>
+          </li>
+        
+          <li>
+            <a href="/2015/10/29/redux-deeply/">redux深入学习之中间件机制</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Jokcy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">文章</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'jokcyblog';
+  
+  var disqus_url = 'http://blog.jokcy.me/2015/11/04/使用Flux的几个问题/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

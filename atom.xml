@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>WebFuture</title>
+  
+  <subtitle>Make Your Future of Web</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://blog.jokcy.me/"/>
+  <updated>2018-01-03T10:19:45.000Z</updated>
+  <id>http://blog.jokcy.me/</id>
+  
+  <author>
+    <name>Jokcy</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>吐槽一下vue loader</title>
+    <link href="http://blog.jokcy.me/2016/04/15/talk-about-vue-loader/"/>
+    <id>http://blog.jokcy.me/2016/04/15/talk-about-vue-loader/</id>
+    <published>2016-04-15T05:18:20.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;前几天在&lt;a href=&quot;https://segmentfault.com/a/1190000004932720?_ea=731409&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;如何创建一个webpack
+        
+      
+    
+    </summary>
+    
+    
+      <category term="webpack" scheme="http://blog.jokcy.me/tags/webpack/"/>
+    
+      <category term="loader" scheme="http://blog.jokcy.me/tags/loader/"/>
+    
+      <category term="vue" scheme="http://blog.jokcy.me/tags/vue/"/>
+    
+      <category term="vue-loader" scheme="http://blog.jokcy.me/tags/vue-loader/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何创建自己的webpack loader</title>
+    <link href="http://blog.jokcy.me/2016/04/15/how-to-create-a-webpack-loader/"/>
+    <id>http://blog.jokcy.me/2016/04/15/how-to-create-a-webpack-loader/</id>
+    <published>2016-04-15T05:16:46.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;在目前的开源市场，前端架构中最火热的项目非webpack莫属了。在使用webpack的过程中，我们会用到各式各样的loader，毫无疑问，因为loader机制的存在让webpack拥有了无限的可能性，让webpack几乎可以容纳一切前端需要的资源。同时合理得利用loader
+        
+      
+    
+    </summary>
+    
+    
+      <category term="webpack" scheme="http://blog.jokcy.me/tags/webpack/"/>
+    
+      <category term="loader" scheme="http://blog.jokcy.me/tags/loader/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>后端接口服务化的意义</title>
+    <link href="http://blog.jokcy.me/2016/01/25/design-rest-api/"/>
+    <id>http://blog.jokcy.me/2016/01/25/design-rest-api/</id>
+    <published>2016-01-25T09:05:58.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;每个公司都有一个核心业务，当我们在开发核心业务的时候，我们就跟着业务走，有新的功能新增一个接口，&lt;br&gt;前端写完页面，前后端联调，然后搞定。在这个阶段，这么做无可厚非，因为核心业务基本是不会重叠的。&lt;br&gt;但是公司发展壮大之后，产品线就会进行扩展，
+        
+      
+    
+    </summary>
+    
+    
+      <category term="rest" scheme="http://blog.jokcy.me/tags/rest/"/>
+    
+      <category term="api" scheme="http://blog.jokcy.me/tags/api/"/>
+    
+      <category term="service" scheme="http://blog.jokcy.me/tags/service/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用Flux的几个问题</title>
+    <link href="http://blog.jokcy.me/2015/11/04/%E4%BD%BF%E7%94%A8Flux%E7%9A%84%E5%87%A0%E4%B8%AA%E9%97%AE%E9%A2%98/"/>
+    <id>http://blog.jokcy.me/2015/11/04/使用Flux的几个问题/</id>
+    <published>2015-11-04T06:44:08.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;最近使用react进行项目开发的时候遇到了几个比较纠结的问题，记录下来大家可以看看，&lt;br&gt;自己也可以慢慢研究，或者有哪位大神有什么好的解决方案，可以留个言或者&lt;a href=&quot;mailto:jokcylou@hotmail.com&quot;
+        
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>redux深入学习之中间件机制</title>
+    <link href="http://blog.jokcy.me/2015/10/29/redux-deeply/"/>
+    <id>http://blog.jokcy.me/2015/10/29/redux-deeply/</id>
+    <published>2015-10-29T03:41:20.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;上一篇文章讲解了redux如何使用，本篇文章将进一步深入，从redux的源码入手，深入学习redux的中间件机制。&lt;br&gt;在这里我们会以一个&lt;code&gt;redux-thunk&lt;/code&gt;中间件为例，逐步分解redux的中间机制如何操作，如何执行。
+        
+      
+    
+    </summary>
+    
+    
+      <category term="react" scheme="http://blog.jokcy.me/tags/react/"/>
+    
+      <category term="flux" scheme="http://blog.jokcy.me/tags/flux/"/>
+    
+      <category term="redux" scheme="http://blog.jokcy.me/tags/redux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>学习使用redux</title>
+    <link href="http://blog.jokcy.me/2015/10/28/learn-to-use-redux/"/>
+    <id>http://blog.jokcy.me/2015/10/28/learn-to-use-redux/</id>
+    <published>2015-10-28T13:57:37.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;在react火热的年代，flux作为fb提出的最适合react的数据模型，时下有非常多的实现。&lt;br&gt;而redux作为在众多的flux地实现中脱颖而出，及其精简的代码，却能带来实用的功能，正好自己的项目中要用，所以让我们来分析redux&lt;/p&gt;
+&lt;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="react" scheme="http://blog.jokcy.me/tags/react/"/>
+    
+      <category term="教程" scheme="http://blog.jokcy.me/tags/%E6%95%99%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>讨论一下es7的装饰器</title>
+    <link href="http://blog.jokcy.me/2015/09/25/es7-decorators/"/>
+    <id>http://blog.jokcy.me/2015/09/25/es7-decorators/</id>
+    <published>2015-09-25T06:30:55.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;blockquote&gt;
+&lt;p&gt;近期一直在做react的项目，看了很多开源项目的代码，其中有一个&lt;code&gt;redux-react-router-async-example&lt;/code&gt;的项目给我印象深刻，因为。。。代码看不懂啊！！！&lt;br&gt;首先，用react开发项目用webpa
+        
+      
+    
+    </summary>
+    
+    
+      <category term="es2015" scheme="http://blog.jokcy.me/tags/es2015/"/>
+    
+      <category term="es2016" scheme="http://blog.jokcy.me/tags/es2016/"/>
+    
+      <category term="decorators" scheme="http://blog.jokcy.me/tags/decorators/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>让我们一起构建Web的未来</title>
+    <link href="http://blog.jokcy.me/2015/09/24/welcome/"/>
+    <id>http://blog.jokcy.me/2015/09/24/welcome/</id>
+    <published>2015-09-24T14:11:00.000Z</published>
+    <updated>2018-01-03T10:19:45.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;欢迎来到WebFuture的博客，在这里我会经常更新一些前端相关的技术博客，前端在可见的未来在客户端编程中的地位会越来越高。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;js是唯一一个有可能统一移动端和桌面的客户端构建语言，我们现在有足够的理由去期待Web的将来。&lt;/strong&gt;&lt;/p
+        
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
